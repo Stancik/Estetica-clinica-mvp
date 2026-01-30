@@ -1,0 +1,663 @@
+openapi: 3.0.3
+
+ 
+
+info:
+
+  title: Estética Clinic App - MVP API
+
+  description: |
+
+    API do MVP para clínica de estética de pequeno porte.
+
+    Funcionalidades: clientes, anamnese, agenda, tratamentos, orçamentos
+
+    e upload de arquivos.
+
+  version: 1.0.0
+
+ 
+
+servers:
+
+  - url: http://localhost:3000
+
+    description: Ambiente local
+
+  - url: https://api.exemplo.com
+
+    description: Produção
+
+ 
+
+tags:
+
+  - name: Autenticação
+
+  - name: Clientes
+
+  - name: Anamnese
+
+  - name: Agendamentos
+
+  - name: Tratamentos
+
+  - name: Orçamentos
+
+  - name: Arquivos
+
+ 
+
+paths:
+
+ 
+
+  /auth/login:
+
+    post:
+
+      tags: [Autenticação]
+
+      summary: Login do usuário
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                email:
+
+                  type: string
+
+                  example: admin@clinica.com
+
+                senha:
+
+                  type: string
+
+                  example: senha123
+
+              required: [email, senha]
+
+      responses:
+
+        '200':
+
+          description: Token JWT gerado com sucesso
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  token:
+
+                    type: string
+
+ 
+
+  /clientes:
+
+    get:
+
+      tags: [Clientes]
+
+      summary: Listar clientes
+
+      responses:
+
+        '200':
+
+          description: Lista de clientes
+
+    post:
+
+      tags: [Clientes]
+
+      summary: Criar cliente
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Cliente'
+
+      responses:
+
+        '201':
+
+          description: Cliente criado com sucesso
+
+ 
+
+  /clientes/{id}:
+
+    get:
+
+      tags: [Clientes]
+
+      summary: Obter cliente pelo ID
+
+      parameters:
+
+        - in: path
+
+          name: id
+
+          required: true
+
+          schema:
+
+            type: integer
+
+      responses:
+
+        '200':
+
+          description: Cliente encontrado
+
+    put:
+
+      tags: [Clientes]
+
+      summary: Atualizar cliente
+
+      parameters:
+
+        - in: path
+
+          name: id
+
+          required: true
+
+          schema:
+
+            type: integer
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Cliente'
+
+      responses:
+
+        '200':
+
+          description: Cliente atualizado
+
+    delete:
+
+      tags: [Clientes]
+
+      summary: Excluir cliente
+
+      parameters:
+
+        - in: path
+
+          name: id
+
+          required: true
+
+          schema:
+
+            type: integer
+
+      responses:
+
+        '204':
+
+          description: Cliente removido
+
+ 
+
+  /anamneses:
+
+    post:
+
+      tags: [Anamnese]
+
+      summary: Criar anamnese para um cliente
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Anamnese'
+
+      responses:
+
+        '201':
+
+          description: Anamnese registrada
+
+ 
+
+  /agendamentos:
+
+    get:
+
+      tags: [Agendamentos]
+
+      summary: Listar agendamentos
+
+      responses:
+
+        '200':
+
+          description: Lista de agendamentos
+
+    post:
+
+      tags: [Agendamentos]
+
+      summary: Criar agendamento
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Agendamento'
+
+      responses:
+
+        '201':
+
+          description: Agendamento criado
+
+ 
+
+  /tratamentos:
+
+    post:
+
+      tags: [Tratamentos]
+
+      summary: Registrar tratamento realizado
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Tratamento'
+
+      responses:
+
+        '201':
+
+          description: Tratamento registrado
+
+ 
+
+  /orcamentos:
+
+    post:
+
+      tags: [Orçamentos]
+
+      summary: Criar orçamento
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/Orcamento'
+
+      responses:
+
+        '201':
+
+          description: Orçamento criado
+
+ 
+
+  /arquivos:
+
+    post:
+
+      tags: [Arquivos]
+
+      summary: Upload de arquivo (foto ou documento)
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          multipart/form-data:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                cliente_id:
+
+                  type: integer
+
+                arquivo:
+
+                  type: string
+
+                  format: binary
+
+                descricao:
+
+                  type: string
+
+      responses:
+
+        '201':
+
+          description: Arquivo enviado
+
+ 
+
+components:
+
+  schemas:
+
+ 
+
+    Cliente:
+
+      type: object
+
+      required:
+
+        - nome_completo
+
+      properties:
+
+        nome_completo:
+
+          type: string
+
+          example: Maria da Silva
+
+        telefone:
+
+          type: string
+
+          example: (41) 99999-9999
+
+        email:
+
+          type: string
+
+          example: maria@email.com
+
+        data_nascimento:
+
+          type: string
+
+          format: date
+
+          example: 1990-05-10
+
+        observacoes:
+
+          type: string
+
+          example: Cliente sensível à dor
+
+ 
+
+    Anamnese:
+
+      type: object
+
+      required:
+
+        - cliente_id
+
+        - consentimento_lgpd
+
+      properties:
+
+        cliente_id:
+
+          type: integer
+
+        possui_doencas:
+
+          type: boolean
+
+        quais_doencas:
+
+          type: string
+
+        faz_uso_medicamentos:
+
+          type: boolean
+
+        quais_medicamentos:
+
+          type: string
+
+        alergias:
+
+          type: string
+
+        gestante:
+
+          type: boolean
+
+        procedimentos_anteriores:
+
+          type: string
+
+        queixa_principal:
+
+          type: string
+
+        consentimento_lgpd:
+
+          type: boolean
+
+          example: true
+
+ 
+
+    Agendamento:
+
+      type: object
+
+      required:
+
+        - cliente_id
+
+        - data
+
+        - hora_inicio
+
+        - duracao_minutos
+
+        - procedimento_descricao
+
+        - status
+
+      properties:
+
+        cliente_id:
+
+          type: integer
+
+        data:
+
+          type: string
+
+          format: date
+
+        hora_inicio:
+
+          type: string
+
+          format: time
+
+        duracao_minutos:
+
+          type: integer
+
+          example: 60
+
+        procedimento_descricao:
+
+          type: string
+
+          example: Limpeza de pele
+
+        status:
+
+          type: string
+
+          enum: [agendado, confirmado, realizado, falta, reagendado]
+
+        observacoes:
+
+          type: string
+
+ 
+
+    Tratamento:
+
+      type: object
+
+      required:
+
+        - cliente_id
+
+        - descricao_procedimento
+
+      properties:
+
+        cliente_id:
+
+          type: integer
+
+        agendamento_id:
+
+          type: integer
+
+        descricao_procedimento:
+
+          type: string
+
+        produtos_utilizados:
+
+          type: string
+
+        observacoes_clinicas:
+
+          type: string
+
+        intercorrencia_ocorreu:
+
+          type: boolean
+
+        descricao_intercorrencia:
+
+          type: string
+
+        data_atendimento:
+
+          type: string
+
+          format: date-time
+
+ 
+
+    Orcamento:
+
+      type: object
+
+      required:
+
+        - cliente_id
+
+        - descricao
+
+        - valor_total
+
+        - status
+
+      properties:
+
+        cliente_id:
+
+          type: integer
+
+        descricao:
+
+          type: string
+
+        valor_total:
+
+          type: number
+
+          format: float
+
+          example: 350.00
+
+        status:
+
+          type: string
+
+          enum: [aberto, aprovado, rejeitado]
+
+        observacoes:
+
+          type: string
