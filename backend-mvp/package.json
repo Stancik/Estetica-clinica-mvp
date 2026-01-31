@@ -1,0 +1,19 @@
+{
+  &quot;name&quot;: &quot;estetica-clinic-backend-mvp&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;node --watch src/index.js&quot;,
+    &quot;start&quot;: &quot;node src/index.js&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;bcryptjs&quot;: &quot;^2.4.3&quot;,
+    &quot;cors&quot;: &quot;^2.8.5&quot;,
+    &quot;dotenv&quot;: &quot;^16.4.0&quot;,
+    &quot;express&quot;: &quot;^4.18.2&quot;,
+    &quot;helmet&quot;: &quot;^7.0.0&quot;,
+    &quot;jsonwebtoken&quot;: &quot;^9.0.2&quot;,
+    &quot;pg&quot;: &quot;^8.11.3&quot;
+  }
+}
