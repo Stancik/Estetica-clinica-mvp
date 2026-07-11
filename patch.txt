@@ -1,0 +1,83 @@
+(function(){
+  function ensureAgendaHeaderColumn(){
+    const head = document.querySelector('.agenda-board-head');
+    if(!head) return;
+    const labels = [...head.querySelectorAll('span')].map(s => s.textContent.trim());
+    if(!labels.includes('Lembrete')){
+      const span = document.createElement('span');
+      span.textContent = 'Lembrete';
+      head.appendChild(span);
+    }
+  }
+
+  function overrideReminderText(){
+    try{
+      reminderText = function(a){
+        return `Olá, ${a.pacienteNome}! Aqui é da UME Estética Avançada.\n\nPassando para lembrar do seu agendamento:\n📅 Data: ${brDate(a.data)}\n⏰ Horário: ${String(a.hora||'').slice(0,5)}\n💆 Procedimento: ${a.procedimentoNome}\n👩‍⚕️ Profissional: ${a.profissional}\n\nSe precisar remarcar, responder por aqui. Até breve!`;
+      };
+    }catch(e){ console.warn('Não foi possível substituir reminderText', e); }
+  }
+
+  function overrideRenderAgenda(){
+    try{
+      renderAgenda = function(){
+        const fData = $('filtroDataAgenda').value;
+        const busca = $('filtroBuscaAgenda').value.toLowerCase().trim();
+        const hoje = todayISO();
+        const list = uniqueAgendamentos(
+          agendamentos.filter(a =>
+            (!fData || a.data===fData) &&
+            (!busca || String(a.pacienteNome||'').toLowerCase().includes(busca) || String(a.procedimentoNome||'').toLowerCase().includes(busca))
+          )
+        ).sort((a,b)=>`${a.data} ${a.hora}`.localeCompare(`${b.data} ${b.hora}`));
+
+        if($('summaryTotalHoje')) $('summaryTotalHoje').textContent = uniqueAgendamentos(agendamentos.filter(a=>a.data===hoje&&a.status!=='cancelou'&&a.status!=='remarcou')).length;
+        if($('totalProximos')) $('totalProximos').textContent = uniqueAgendamentos(agendamentos.filter(a=>a.data>=hoje&&a.status!=='cancelou')).length;
+        if($('totalAmanha')) $('totalAmanha').textContent = uniqueAgendamentos(agendamentos.filter(a=>a.data===tomorrowISO()&&a.status!=='cancelou'&&a.status!=='remarcou')).length;
+        if($('agendaDiaTitulo')) $('agendaDiaTitulo').textContent = fData ? (fData===hoje ? 'Hoje' : brDate(fData)) : 'Agenda completa';
+        if($('agendaDiaTotal')) $('agendaDiaTotal').textContent = list.length;
+
+        if(typeof renderAmanha === 'function') renderAmanha();
+        if(typeof nextAppointment === 'function'){
+          const next = nextAppointment();
+          if($('proximoAtendimentoPaciente')) $('proximoAtendimentoPaciente').textContent = next ? next.pacienteNome : 'Nenhum atendimento';
+          if($('proximoAtendimentoResumo')) $('proximoAtendimentoResumo').textContent = next ? `${brDate(next.data)} às ${String(next.hora||'').slice(0,5)} • ${next.procedimentoNome}` : 'Adicione agendamentos para visualizar o próximo horário.';
+        }
+
+        const lista = $('agendaLista');
+        if(!lista) return;
+        if(!list.length){
+          lista.innerHTML = '<div class="agenda-empty">Nenhum agendamento encontrado.</div>';
+          return;
+        }
+
+        lista.innerHTML = list.map(a=>{
+          const hasWa = !!(typeof waLink === 'function' && waLink(a));
+          const button = hasWa
+            ? `<button class="btn whatsapp small agenda-wa-btn" type="button" onclick="event.stopPropagation();enviarWhatsAppAgendamento(${a.id})">Lembrar no WhatsApp</button>`
+            : `<button class="btn ghost small agenda-wa-btn" type="button" disabled onclick="event.stopPropagation()">Sem WhatsApp</button>`;
+
+          return `<article class="agenda-row" role="button" tabindex="0" onclick="editarAgendamento(${a.id})" onkeydown="if(event.target.closest('button')) return; if(event.key==='Enter'||event.key===' '){event.preventDefault();editarAgendamento(${a.id})}">
+            <span class="agenda-cell" data-label="Data">${brDate(a.data)}</span>
+            <span class="agenda-cell" data-label="Hora">${String(a.hora||'').slice(0,5)}</span>
+            <span class="agenda-cell patient-cell" data-label="Paciente">${esc(a.pacienteNome)}</span>
+            <span class="agenda-cell procedure-cell" data-label="Procedimento">${esc(a.procedimentoNome)}</span>
+            <span class="agenda-cell agenda-action-cell" data-label="Lembrete">${button}</span>
+          </article>`;
+        }).join('');
+      };
+    }catch(e){ console.warn('Não foi possível substituir renderAgenda', e); }
+  }
+
+  function initPatch(){
+    ensureAgendaHeaderColumn();
+    overrideReminderText();
+    overrideRenderAgenda();
+    if(typeof renderAgenda === 'function'){
+      try{ renderAgenda(); }catch(e){ console.warn('renderAgenda patch init falhou', e); }
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPatch);
+  else initPatch();
+})();

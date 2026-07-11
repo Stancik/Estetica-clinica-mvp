@@ -1,0 +1,38 @@
+/* Ajustes Desktop Pro Plus */
+.agenda-action-cell{display:flex;justify-content:flex-end;align-items:center}
+.agenda-wa-btn{min-width:168px}
+
+@media (min-width:1200px){
+  .home-panel{
+    grid-template-rows:auto auto;
+    align-content:center;
+    gap:34px;
+    padding:42px 44px;
+  }
+  .home-logo-area{margin:0 auto 10px auto}
+  .home-logo{
+    width:clamp(460px, 42vw, 760px) !important;
+    max-height:320px !important;
+    filter:drop-shadow(0 24px 34px rgba(101,72,57,.10)) !important;
+  }
+  .home-logo-fallback{
+    width:clamp(460px, 42vw, 760px) !important;
+    height:220px !important;
+    font-size:4.4rem !important;
+    border-radius:42px !important;
+  }
+  .home-grid{
+    width:min(100%, 1180px) !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:22px !important;
+  }
+  .agenda-board-head,
+  .agenda-row{
+    grid-template-columns:150px 100px minmax(180px,1.15fr) minmax(180px,1fr) 196px !important;
+  }
+}
+
+@media (max-width:780px){
+  .agenda-action-cell{justify-content:flex-start}
+  .agenda-wa-btn{width:100%;min-width:0}
+}
